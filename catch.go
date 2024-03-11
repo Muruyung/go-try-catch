@@ -1,45 +1,61 @@
 package try
 
 import (
+	"errors"
+	"fmt"
 	"reflect"
+	"runtime"
 )
 
-func (e *Exception) Catch(f any) *Exception {
+func (e *exceptionInteractor) Catch(f any) (except Exception) {
 	if e == nil {
 		return nil
 	}
 
-	fVal := reflect.ValueOf(f)
-	fType := fVal.Type()
+	catchFunc(e, f)
 
-	if fType.NumIn() == 1 {
-		firstParamType := fType.In(0)
-		errorType := reflect.TypeOf(e.err)
+	return e
+}
 
-		if errorType.String() == "*errors.errorString" {
-			var err error
-			errorType = reflect.TypeOf(&err).Elem()
-		}
+func catchFunc(e *exceptionInteractor, f any) {
+	defer recoverFunc(e)
 
-		if firstParamType.AssignableTo(errorType) {
-			fVal.Call([]reflect.Value{reflect.ValueOf(e.err)})
-		}
-	} else if fType.NumIn() == 2 {
-		firstParamType := fType.In(0)
-		errorType := reflect.TypeOf(e.err)
+	var (
+		fVal  = reflect.ValueOf(f)
+		fType = fVal.Type()
+		fCall = make([]reflect.Value, 0)
+	)
 
-		secondParamType := fType.In(1)
-		stackTraceType := reflect.TypeOf(e.stackTrace)
+	if fType.NumIn() > 2 {
+		panic("invalid parameter for catch")
+	}
 
-		if errorType.String() == "*errors.errorString" {
-			var err error
-			errorType = reflect.TypeOf(&err).Elem()
-		}
+	switch exception := e.exception.(type) {
+	case runtime.Error:
+		e.exception = errors.New(exception.Error())
+	}
 
-		if firstParamType.AssignableTo(errorType) && secondParamType.ConvertibleTo(stackTraceType) {
-			fVal.Call([]reflect.Value{reflect.ValueOf(e.err), reflect.ValueOf(e.stackTrace)})
+	var (
+		exceptionType  = reflect.TypeOf(e.exception)
+		stType         StackTrace
+		stackTraceType = reflect.TypeOf(&stType).Elem()
+		err            error
+		errorType      = reflect.TypeOf(&err).Elem()
+	)
+
+	for i := 0; i < fType.NumIn(); i++ {
+		paramType := fType.In(i)
+		if paramType.AssignableTo(errorType) {
+			e.exception = fmt.Errorf("%v", e.exception)
+			fCall = append(fCall, reflect.ValueOf(e.exception))
+		} else if paramType.AssignableTo(exceptionType) {
+			fCall = append(fCall, reflect.ValueOf(e.exception))
+		} else if paramType.AssignableTo(stackTraceType) {
+			fCall = append(fCall, reflect.ValueOf(e.stackTrace))
+		} else {
+			panic("invalid parameter for catch")
 		}
 	}
 
-	return e
+	fVal.Call(fCall)
 }

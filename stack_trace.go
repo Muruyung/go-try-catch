@@ -1,17 +1,54 @@
 package try
 
-import "fmt"
+import (
+	"fmt"
+	"runtime"
+	"strings"
+)
 
-type StackTrace struct {
-	stackInfos []StackInfo
+type stackInteractor struct {
+	listInfo []traceInfo
 }
 
-func (st *StackTrace) Print() {
-	stackTrace := ""
+func getStackTrace() StackTrace {
+	listInfo := make([]traceInfo, 0)
 
-	for _, si := range st.stackInfos {
-		stackTrace += si.String()
+	for i := 4; ; i++ {
+		// if i == 5 || i == 6 {
+		// 	continue
+		// }
+
+		pc, file, line, ok := runtime.Caller(i)
+		if !ok {
+			break
+		}
+
+		listInfo = append(listInfo, traceInfo{
+			pc:   pc,
+			file: file,
+			line: line,
+		})
 	}
 
-	fmt.Println(stackTrace[:len(stackTrace)-1])
+	listInfo = listInfo[:len(listInfo)-2]
+	return &stackInteractor{
+		listInfo: listInfo,
+	}
+}
+
+func (trace *stackInteractor) Print() {
+	fmt.Println(trace.String())
+}
+
+func (trace *stackInteractor) String() string {
+	var info string
+
+	for _, val := range trace.listInfo {
+		if strings.Contains(val.String(), "github.com/Muruyung/go-try-catch") {
+			continue
+		}
+		info += val.String()
+	}
+
+	return info
 }
