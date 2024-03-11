@@ -28,13 +28,13 @@ Try(func () {
 | Name | Description |
 | - | - |
 | `Try()` | Takes `func ()`, wrap your code here! |
-| `Catch()` | Takes `func (any)` or `func (any, *StackTrace)`, and it will only accept the error type you have declared. You can accept second parameter, which is the stack trace begin from the last `ThrowNewException()`. |
+| `Catch()` | Takes `func (any)` or `func (any, StackTrace)`, and it will only accept the error type you have declared. You can accept second parameter, which is the stack trace begin from the last `ThrowNewException()`. |
 | `ThrowNewException()` | Takes `any`. **Will only throw an error when the parameter is not** `nil`. |
 | `Error()` | Return `error` value from `ThrowNewException()`. |
 | `GetException()` | Return `any` value from `ThrowNewException()`. |
 | `GetStackTrace()` | Return **stack trace** value from `ThrowNewException()`. |
-| `st.Print()` | If you have declared parameter `st *StackTrace`, you can print the stack trace using `st.Print()`. |
-| `st.String()` | If you have declared parameter `st *StackTrace`, you can get value of stack trace using `st.String()`. |
+| `st.Print()` | If you have declared parameter `st StackTrace`, you can print the stack trace using `st.Print()`. |
+| `st.String()` | If you have declared parameter `st StackTrace`, you can get value of stack trace using `st.String()`. |
 
 ### Example
 
@@ -65,7 +65,7 @@ func main() {
     ThrowNewException(err)
 
     fmt.Println(data)
-  }).Catch(func(e error, st *StackTrace) {
+  }).Catch(func(e error, st StackTrace) {
     fmt.Println(e)
     st.Print()
   })
