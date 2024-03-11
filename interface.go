@@ -1,4 +1,4 @@
-package try
+package gotry
 
 type Exception interface {
 	Catch(any) Exception

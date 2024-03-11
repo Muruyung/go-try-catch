@@ -1,4 +1,4 @@
-package try
+package gotry
 
 type exceptionInteractor struct {
 	exception  any
