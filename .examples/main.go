@@ -12,18 +12,21 @@ type Test struct {
 }
 
 func main() {
+	// Example exception using int value
 	Try(func() {
 		ThrowNewException(1)
 	}).Catch(func(i int) {
 		fmt.Println("This is an int exception:", i)
 	})
 
+	// Example exception using string value
 	Try(func() {
 		ThrowNewException("hello world")
 	}).Catch(func(s string) {
 		fmt.Println("This is a string exception:", s)
 	})
 
+	// Example exception using error value
 	Try(func() {
 		err := errors.New("this is an error exception")
 		ThrowNewException(err)
@@ -31,6 +34,7 @@ func main() {
 		fmt.Println(e)
 	})
 
+	// Example exception using struct data
 	Try(func() {
 		test := Test{
 			val: "This is a struct exception",
@@ -42,13 +46,24 @@ func main() {
 		st.Print()
 	})
 
+	// Example return error and stack trace
 	exception := Try(func() {
 		err := errors.New("this is an error exception")
 		ThrowNewException(err)
 	}).Catch(func(e error) {
 		fmt.Println("This is an example for return exception")
 	})
-
 	fmt.Println(exception.Error())
 	fmt.Println(exception.GetStackTrace())
+
+	// Example success case without exception
+	var test Test
+	exception = Try(func() {
+		test.val = "This is an example for success without error"
+	}).Catch(func(e error) {
+		fmt.Println("This is an example for return exception")
+	})
+	fmt.Println(exception.Error())
+	fmt.Println(exception.GetStackTrace())
+	fmt.Println(test)
 }

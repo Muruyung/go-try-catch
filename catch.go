@@ -12,7 +12,9 @@ func (e *exceptionInteractor) Catch(f any) (except Exception) {
 		return nil
 	}
 
-	catchFunc(e, f)
+	if e.exception != nil {
+		catchFunc(e, f)
+	}
 
 	return e
 }
