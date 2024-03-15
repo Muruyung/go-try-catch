@@ -9,15 +9,15 @@ go get github.com/Muruyung/go-try-catch@latest
 ### Usage
 
 ```go
-Try(func () {
+Try(func(ThrowNewException func(any)) {
   ...
   ThrowNewException(ce)
   ...
   ThrowNewException(err)
   ...
-}).Catch(func (ce CustomError) {
+}).Catch(func(ce CustomError) {
   ...
-}).Catch(func (e error, st StackTrace) {
+}).Catch(func(e error, st StackTrace) {
   ...
   st.Print()
 })
@@ -52,7 +52,7 @@ import (
 )
 
 func main() {
-  Try(func() {
+  Try(func(ThrowNewException func(any)) {
     resp, err := http.Get("https://jsonplaceholder.typicode.com/posts")
     ThrowNewException(err)
     defer resp.Body.Close()

@@ -1,6 +1,6 @@
 package gotry
 
-func ThrowNewException(e any) {
+func throwNewException(e any) {
 	if e != nil {
 		panic(e)
 	}

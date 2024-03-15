@@ -5,7 +5,7 @@ type exceptionInteractor struct {
 	stackTrace StackTrace
 }
 
-func Try(f func()) Exception {
+func Try(f func(ThrowNewException func(any))) Exception {
 	e := new(exceptionInteractor)
 
 	tryFunc(e, f)
@@ -13,7 +13,7 @@ func Try(f func()) Exception {
 	return e
 }
 
-func tryFunc(e *exceptionInteractor, try func()) {
+func tryFunc(e *exceptionInteractor, try func(ThrowNewException func(any))) {
 	defer recoverFunc(e)
-	try()
+	try(throwNewException)
 }
