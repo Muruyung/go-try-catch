@@ -7,6 +7,7 @@ import (
 	"runtime"
 )
 
+// Catch running catch function if it catch exception (error)
 func (e *exceptionInteractor) Catch(f any) (except Exception) {
 	if e == nil {
 		return nil

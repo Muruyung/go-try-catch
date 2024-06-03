@@ -36,10 +36,12 @@ func getStackTrace() StackTrace {
 	}
 }
 
+// Print print output stacktrace
 func (trace *stackInteractor) Print() {
 	fmt.Println(trace.String())
 }
 
+// String return string of stacktrace
 func (trace *stackInteractor) String() string {
 	var info string
 
@@ -48,6 +50,19 @@ func (trace *stackInteractor) String() string {
 			continue
 		}
 		info += val.String()
+	}
+
+	return info
+}
+
+// GetList return get list of stacktrace
+func (trace *stackInteractor) GetList() []string {
+	info := make([]string, 0)
+	for _, val := range trace.listInfo {
+		if strings.Contains(val.String(), "github.com/Muruyung/go-try-catch") || val.String() == "" {
+			continue
+		}
+		info = append(info, val.String())
 	}
 
 	return info

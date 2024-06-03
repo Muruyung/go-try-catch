@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 
-	. "github.com/Muruyung/go-try-catch"
+	gotry "github.com/Muruyung/go-try-catch"
 )
 
 type Test struct {
@@ -13,21 +13,21 @@ type Test struct {
 
 func main() {
 	// Example exception using int value
-	Try(func(ThrowNewException func(any)) {
+	gotry.Try(func(ThrowNewException func(any)) {
 		ThrowNewException(1)
 	}).Catch(func(i int) {
 		fmt.Println("This is an int exception:", i)
 	})
 
 	// Example exception using string value
-	Try(func(ThrowNewException func(any)) {
+	gotry.Try(func(ThrowNewException func(any)) {
 		ThrowNewException("hello world")
 	}).Catch(func(s string) {
 		fmt.Println("This is a string exception:", s)
 	})
 
 	// Example exception using error value
-	Try(func(ThrowNewException func(any)) {
+	gotry.Try(func(ThrowNewException func(any)) {
 		err := errors.New("this is an error exception")
 		ThrowNewException(err)
 	}).Catch(func(e error) {
@@ -35,19 +35,19 @@ func main() {
 	})
 
 	// Example exception using struct data
-	Try(func(ThrowNewException func(any)) {
+	gotry.Try(func(ThrowNewException func(any)) {
 		test := Test{
 			val: "This is a struct exception",
 		}
 		ThrowNewException(test)
-	}).Catch(func(t Test, st StackTrace) {
+	}).Catch(func(t Test, st gotry.StackTrace) {
 		fmt.Println(t)
 		fmt.Println("This is a stack trace result")
 		st.Print()
 	})
 
 	// Example return error and stack trace
-	exception := Try(func(ThrowNewException func(any)) {
+	exception := gotry.Try(func(ThrowNewException func(any)) {
 		err := errors.New("this is an error exception")
 		ThrowNewException(err)
 	}).Catch(func(e error) {
@@ -58,7 +58,7 @@ func main() {
 
 	// Example success case without exception
 	var test Test
-	exception = Try(func(ThrowNewException func(any)) {
+	exception = gotry.Try(func(ThrowNewException func(any)) {
 		test.val = "This is an example for success without error"
 	}).Catch(func(e error) {
 		fmt.Println("This is an example for return exception")
@@ -66,4 +66,20 @@ func main() {
 	fmt.Println(exception.Error())
 	fmt.Println(exception.GetStackTrace())
 	fmt.Println(test)
+
+	// Example using block
+	exception = gotry.Block{
+		Try: func(ThrowNewException func(any)) {
+			err := errors.New("this is an error using block exception")
+			ThrowNewException(err)
+		},
+		Catch: func(e error, st gotry.StackTrace) {
+			fmt.Println(e)
+			for _, val := range st.GetList() {
+				fmt.Print(val)
+			}
+		},
+	}.Do()
+	fmt.Println(exception.Error())
+	fmt.Println(exception.GetStackTrace())
 }

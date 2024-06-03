@@ -7,6 +7,7 @@ go get github.com/Muruyung/go-try-catch@latest
 ```
 
 ### Usage
+There is example usage using try and catch function
 
 ```go
 Try(func(ThrowNewException func(any)) {
@@ -21,6 +22,20 @@ Try(func(ThrowNewException func(any)) {
   ...
   st.Print()
 })
+```
+
+There is example usage using try and catch block struct
+```go
+Block {
+  Try: func(ThrowNewException func(any)) {
+    ...
+    ThrowNewException(err)
+  },
+  Catch: func(e error, st StackTrace) {
+    ...
+    st.Print()
+  }
+}.Do()
 ```
 
 ### Functions
@@ -48,11 +63,12 @@ import (
   "io/ioutil"
   "net/http"
 
-  . "github.com/Muruyung/go-try-catch"
+  gotry "github.com/Muruyung/go-try-catch"
 )
 
 func main() {
-  Try(func(ThrowNewException func(any)) {
+  // Example using function try and catch
+  e := gotry.Try(func(ThrowNewException func(any)) {
     resp, err := http.Get("https://jsonplaceholder.typicode.com/posts")
     ThrowNewException(err)
     defer resp.Body.Close()
@@ -65,10 +81,30 @@ func main() {
     ThrowNewException(err)
 
     fmt.Println(data)
-  }).Catch(func(e error, st StackTrace) {
+  }).Catch(func(e error, st gotry.StackTrace) {
     fmt.Println(e)
     st.Print()
   })
+  if err := e.Error(); err != nil {
+    fmt.Println(err)
+  }
+
+  // Example using block struct try and catch
+  e = gotry.Block{
+    Try: func(ThrowNewException func(any)) {
+      err := errors.New("this is an error using block exception")
+      ThrowNewException(err)
+    },
+    Catch: func(e error, st gotry.StackTrace) {
+      fmt.Println(e)
+      for _, val := range st.GetList() {
+        fmt.Print(val)
+      }
+    },
+  }.Do()
+  if err := e.Error(); err != nil {
+    fmt.Println(err)
+  }
 }
 ```
 
