@@ -8,5 +8,10 @@ func (e *exceptionInteractor) Error() error {
 		return nil
 	}
 
-	return fmt.Errorf("%v", e.exception)
+	switch err := e.exception.(type) {
+	case error:
+		return err
+	default:
+		return fmt.Errorf("%v", e.exception)
+	}
 }

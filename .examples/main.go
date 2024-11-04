@@ -11,6 +11,26 @@ type Test struct {
 	val interface{}
 }
 
+type CustomError struct {
+	statusCode int
+	err        error
+}
+
+func (ce *CustomError) Error() string {
+	return ce.err.Error()
+}
+
+func (ce *CustomError) Status() int {
+	return ce.statusCode
+}
+
+func NewCustomError(err error) *CustomError {
+	return &CustomError{
+		statusCode: 1,
+		err:        err,
+	}
+}
+
 func main() {
 	// Example exception using int value
 	gotry.Try(func(ThrowNewException func(any)) {
@@ -82,4 +102,21 @@ func main() {
 	}.Do()
 	fmt.Println(exception.Error())
 	fmt.Println(exception.GetStackTrace())
+
+	// Example using custom error
+	exception = gotry.Block{
+		Try: func(ThrowNewException func(any)) {
+			var err error = NewCustomError(errors.New("this is an error using custom error"))
+			ThrowNewException(err)
+		},
+		Catch: func(e error, st gotry.StackTrace) {
+			fmt.Println(e)
+			for _, val := range st.GetList() {
+				fmt.Print(val)
+			}
+		},
+	}.Do()
+
+	_, ok := exception.Error().(*CustomError)
+	fmt.Println(ok)
 }

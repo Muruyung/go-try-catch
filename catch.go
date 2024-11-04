@@ -2,7 +2,6 @@ package gotry
 
 import (
 	"errors"
-	"fmt"
 	"reflect"
 	"runtime"
 )
@@ -49,7 +48,6 @@ func catchFunc(e *exceptionInteractor, f any) {
 	for i := 0; i < fType.NumIn(); i++ {
 		paramType := fType.In(i)
 		if paramType.AssignableTo(errorType) {
-			e.exception = fmt.Errorf("%v", e.exception)
 			fCall = append(fCall, reflect.ValueOf(e.exception))
 		} else if paramType.AssignableTo(exceptionType) {
 			fCall = append(fCall, reflect.ValueOf(e.exception))
